@@ -1,6 +1,6 @@
 # Camera as light sensor
 
-Use your computer’s camera (e.g. front-facing) as a simple light sensor in Python.
+Use your computer’s camera (e.g. front-facing) as a simple light sensor in Python. Run all commands from the **project root**; scripts resolve `data/` and `data/reference/` relative to the repo.
 
 ## Project structure
 
@@ -160,6 +160,25 @@ python scripts/pulse_ox_camera.py
 
 Use good ambient light (or the screen). Hold your finger still for at least 5–10 seconds.
 
+### Color stream: plot and FFT
+
+After recording a color or NIR stream (e.g. `python scripts/color_reader.py --nir --stream > data/color_stream.csv`), plot it and run an FFT:
+
+```bash
+# Plot time series (default: data/color_stream.csv)
+python scripts/plot_color_stream.py
+python scripts/plot_color_stream.py data/color_stream.csv
+
+# Time window and gain
+python scripts/plot_color_stream.py --t-min 10 --t-max 60 --gain 2 data/color_stream.csv
+
+# FFT on first value column (e.g. NIR_proxy_broad); optional time window for FFT
+python scripts/plot_color_stream.py --fft --no-show data/color_stream.csv
+python scripts/plot_color_stream.py --fft --fft-t-min 20 --fft-t-max 30 data/color_stream.csv
+```
+
+Output: time series PNG and, with `--fft`, dominant frequency printed and `data/color_stream_fft.png` saved.
+
 ### Camera cholesterol assay demo (Peuchant-style)
 
 A **camera-based cholesterol assay demo** inspired by the enzymatic method (e.g. [Peuchant 1987](https://www.degruyter.com/document/doi/10.1515/cclm.1987.25.12.915)): cholesterol esterase + cholesterol oxidase + peroxidase produce a colored quinoneimine product read at ~500 nm. This script uses the camera’s **red channel** as a proxy for that absorbance and reports an uncalibrated **absorbance proxy** and **cholesterol index**. **Not for medical use**; the camera is not a spectrophotometer and values require calibration with known standards.
@@ -186,3 +205,7 @@ python scripts/cholesterol_peuchant_nir.py
 ```
 
 Output: table of synthetic TC and LDL (mmol/L and mg/dL), and `data/cholesterol_peuchant_synthetic.json` with reflectance and lipid values. Run with `--fat-test` to apply the formula to `data/reference/fat_nir_reference.json`.
+
+---
+
+**Other scripts:** `scripts/flashlight.py` — fullscreen white on desktop; `scripts/test_camera_led.py` — short camera test. See `docs/reference.txt` for a compact command list.
