@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Generated data (optional: comment out to track example outputs)
+# data/color_stream.csv
+# data/color_stream.png
+# data/color_stream_fft.png
+# data/light_sensor_timeseries.csv
+# data/light_sensor_timeseries.png
+# data/light_sensor_timeseries_spectrogram.png
+# data/light_sensor_timeseries_frequencies.csv

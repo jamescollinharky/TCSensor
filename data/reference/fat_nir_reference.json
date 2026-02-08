@@ -1,0 +1,11 @@
+{
+  "_comment": "NIR absorption of pure fat (mammalian). Van Veen/OMLC 429-1098 nm; peuchant block = literature-based estimate so pure fat gives high TC.",
+  "source": "https://omlc.org/spectra/fat/fat.txt",
+  "citation": "R.L.P. van Veen et al., Determination of VIS-NIR absorption coefficients of mammalian fat, OSA BIOMED 2004",
+  "wavelength_nm": [500, 600, 700, 720, 760, 800, 850, 900, 930, 970, 1000, 1050, 1098],
+  "mu_a_per_cm": [1.91, 0.47, 0.32, 0.37, 1.29, 0.4, 0.64, 4.63, 13.1, 4.8, 2.65, 5.03, 4.91],
+  "peuchant_wavelengths_nm": [1445, 1680, 1722, 1734, 1940, 2190, 2208],
+  "mu_a_per_cm_peuchant_estimate": [5, 12, 20, 18, 3, 6, 5],
+  "_peuchant_notes": "Estimated mu_a for lipid at Peuchant wavelengths (CH2 bands 1720-1760 nm strong; 1680 nm CH; 1445/1940 OH; 2190/2208 combination). Refs: Bashkatov et al. Opt. Spectrosc. 99 (2005) adipose 400-2500 nm; Peuchant 1987 cholesterol peaks 1718, 1750 nm.",
+  "notes": "Pure fat at 1722/1734 nm has strong CH2 absorption -> low R -> high TC. Constant extrapolation from 1098 nm underestimated TC."
+}

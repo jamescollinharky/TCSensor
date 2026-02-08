@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Rear camera flash</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; background: #111; color: #eee; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+    h1 { font-size: 1.25rem; margin-bottom: 8px; }
+    p { font-size: 0.9rem; color: #999; text-align: center; margin-bottom: 8px; }
+    .status { font-size: 0.85rem; color: #0a0; }
+    .status.unsupported { color: #c00; }
+    .btn { font-size: 1.1rem; padding: 14px 28px; border-radius: 12px; border: none; cursor: pointer; width: 100%; max-width: 280px; }
+    .btn-on { background: #fff; color: #000; }
+    .btn-off { background: #333; color: #fff; border: 1px solid #666; }
+    .btn-blink { background: #387; color: #fff; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-row { display: flex; gap: 10px; width: 100%; max-width: 280px; }
+    .btn-row .btn { flex: 1; }
+    video { width: 100%; max-width: 200px; border-radius: 12px; background: #000; }
+  </style>
+</head>
+<body>
+  <h1>Rear camera flash</h1>
+  <p id="hint">Allow camera access, then use the buttons to control the flash.</p>
+  <p id="status" class="status"></p>
+  <video id="video" playsinline muted autoplay style="display:none;"></video>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;width:100%;max-width:280px;">
+    <label for="blinkHz" style="font-size:0.9rem;">Blink (Hz):</label>
+    <select id="blinkHz" style="font-size:1rem;padding:6px 10px;border-radius:8px;background:#333;color:#eee;border:1px solid #666;">
+      <option value="0.5">0.5</option>
+      <option value="0.75">0.75</option>
+      <option value="1" selected>1</option>
+      <option value="1.25">1.25</option>
+      <option value="1.5">1.5</option>
+      <option value="2">2</option>
+      <option value="2.5">2.5</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="8">8</option>
+      <option value="10">10</option>
+    </select>
+  </div>
+  <button type="button" id="btnOn" class="btn btn-on" disabled>Flash ON</button>
+  <button type="button" id="btnOff" class="btn btn-off" disabled>Flash OFF</button>
+  <button type="button" id="btnBlink" class="btn btn-blink" disabled>Blink</button>
+
+  <script>
+    (function () {
+      const video = document.getElementById('video');
+      const status = document.getElementById('status');
+      const hint = document.getElementById('hint');
+      const btnOn = document.getElementById('btnOn');
+      const btnOff = document.getElementById('btnOff');
+      const btnBlink = document.getElementById('btnBlink');
+
+      let stream = null;
+      let videoTrack = null;
+      let blinkTimer = null;
+
+      function setStatus(msg, unsupported) {
+        status.textContent = msg;
+        status.classList.toggle('unsupported', !!unsupported);
+      }
+
+      function setButtons(enabled) {
+        btnOn.disabled = !enabled;
+        btnOff.disabled = !enabled;
+        btnBlink.disabled = !enabled;
+      }
+
+      function stopBlink() {
+        if (blinkTimer) {
+          clearInterval(blinkTimer);
+          blinkTimer = null;
+        }
+        setStatus(stream ? 'Flash ready.' : '');
+      }
+
+      function setTorch(on) {
+        if (!videoTrack) return Promise.resolve();
+        const caps = videoTrack.getCapabilities();
+        if (!caps.torch) {
+          setStatus('Torch not supported on this device.', true);
+          return Promise.resolve();
+        }
+        return videoTrack.applyConstraints({ advanced: [{ torch: !!on }] })
+          .then(function () { setStatus(on ? 'Flash ON' : 'Flash OFF'); })
+          .catch(function (e) { setStatus('Error: ' + (e.message || 'torch failed')); });
+      }
+
+      btnOn.addEventListener('click', function () {
+        stopBlink();
+        setTorch(true);
+      });
+
+      btnOff.addEventListener('click', function () {
+        stopBlink();
+        setTorch(false);
+      });
+
+      btnBlink.addEventListener('click', function () {
+        if (blinkTimer) {
+          stopBlink();
+          setTorch(false);
+          return;
+        }
+        var hz = Math.max(0.5, parseFloat(document.getElementById('blinkHz').value) || 1);
+        var periodMs = Math.round(1000 / hz);
+        var on = false;
+        setTorch(false);
+        blinkTimer = setInterval(function () {
+          on = !on;
+          setTorch(on);
+        }, periodMs / 2);
+        setStatus('Blinking at ' + hz + ' Hz (tap Blink again to stop)');
+      });
+
+      function init() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setStatus('Camera API not available.', true);
+          return;
+        }
+        setStatus('Requesting camera (use rear)...');
+        const constraints = {
+          video: {
+            facingMode: 'environment',
+            width: { ideal: 640 },
+            height: { ideal: 480 }
+          },
+          audio: false
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(function (s) {
+            stream = s;
+            videoTrack = stream.getVideoTracks()[0];
+            video.srcObject = stream;
+            video.style.display = 'block';
+
+            const caps = videoTrack.getCapabilities();
+            if (caps.torch) {
+              setStatus('Flash ready. Use rear camera.');
+              setButtons(true);
+            } else {
+              setStatus('This camera does not support torch/flash.', true);
+              setButtons(false);
+            }
+          })
+          .catch(function (err) {
+            setStatus('Camera error: ' + (err.message || 'denied'), true);
+            setButtons(false);
+          });
+      }
+
+      window.addEventListener('beforeunload', function () {
+        stopBlink();
+        if (stream) {
+          stream.getTracks().forEach(function (t) { t.stop(); });
+        }
+      });
+
+      init();
+    })();
+  </script>
+</body>
+</html>

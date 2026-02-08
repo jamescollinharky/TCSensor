@@ -1,0 +1,67 @@
+Light sensor (camera as light sensor) — quick reference
+=====================================================
+
+Setup
+-----
+  pip install -r requirements.txt
+  macOS: grant Camera access to Terminal/IDE in System Settings → Privacy & Security → Camera
+
+Commands
+--------
+  python scripts/light_sensor.py
+    Single brightness reading (0–255, 0–100%)
+
+  python scripts/light_sensor.py --watch
+    Live brightness bar (Ctrl+C to stop)
+
+  python scripts/light_sensor.py --record [--duration SEC] [--interval SEC]
+    Record time series; saves CSV + time series PNG + spectrogram PNG + frequencies CSV.
+    Default: sample every 1 s; use --duration to limit, --interval for rate.
+
+  python scripts/light_sensor.py --record --flash HZ --duration SEC
+    Flash screen at HZ (white/black) while recording. Point camera at screen.
+    Uses ~30 Hz sampling. Example: --flash 15 --duration 10
+
+  python scripts/light_sensor.py --plot [CSV]
+    Plot time series from CSV (default: light_sensor_timeseries.csv)
+
+  python scripts/light_sensor.py --spectrogram [CSV]
+    Plot spectrogram from CSV (default: light_sensor_timeseries.csv)
+
+  python scripts/light_sensor.py --frequencies [CSV]
+    Print dominant frequencies (Hz) from CSV (default: light_sensor_timeseries.csv)
+
+  python scripts/light_sensor.py CAMERA_INDEX ...
+    Use different camera (e.g. 1 for front camera): python scripts/light_sensor.py 1 --record
+
+Output files (after --record)
+-----------------------------
+  light_sensor_timeseries.csv       timestamp, brightness
+  light_sensor_timeseries.png       time series plot
+  light_sensor_timeseries_spectrogram.png   spectrogram (time vs frequency)
+  light_sensor_timeseries_frequencies.csv   frequency_Hz, power_dB
+
+Other scripts
+-------------
+  python scripts/flashlight.py
+    Fullscreen white “flashlight”; click or Esc/Q to turn off.
+
+  python scripts/test_camera_led.py
+    Opens camera 5 s; check if hardware LED turns on (LED is not software-controllable).
+
+  python scripts/pulse_ox_camera.py [CAMERA_INDEX]
+    Test pulse oximeter using camera (reflectance PPG). Place finger over lens.
+    Shows pulse (BPM) and uncalibrated SpO2-like proxy. NOT for medical use.
+    Ref: https://en.wikipedia.org/wiki/Pulse_oximetry
+
+  python scripts/cholesterol_camera.py [--reference] [--measure] [--watch]
+    Camera-based cholesterol assay demo (enzymatic method proxy, e.g. Peuchant 1987).
+    --reference: capture blank, save to cholesterol_reference.json
+    --measure: measure sample using saved reference (absorbance proxy, cholesterol index)
+    --watch: live R and absorbance proxy. NOT for medical use; calibration required.
+
+Notes
+-----
+  • Camera’s physical LED/flash cannot be controlled from code.
+  • “Flash” in this project = flashing the screen (point camera at screen).
+  • Spectrogram shows brightness modulation over time and frequency.
