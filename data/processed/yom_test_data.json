@@ -1,0 +1,28 @@
+[
+  {
+    "_comment": "YOM test: 1722 nm from avg of 1.9\u20132.1 Hz bandpass (Arduino series); A->R=10^(-A). Other bands = median synthetic.",
+    "reflectance_nm": {
+      "2208": 0.4344,
+      "2190": 0.4514,
+      "1940": 0.4832,
+      "1734": 0.5923,
+      "1722": 0.5971,
+      "1445": 0.5254,
+      "1680": 0.6218
+    },
+    "absorption_nm": {
+      "1722": 0.224
+    },
+    "tc_mmol_l": 4.9,
+    "hdl_mmol_l": 1.2,
+    "tg_mmol_l": 1.5,
+    "ldl_mmol_l": 3.02,
+    "tc_mg_dl": 189.5,
+    "ldl_mg_dl": 116.7,
+    "sensor_bands_used": {
+      "1720_nm_avg_count_1.9_2.1hz": 610.79,
+      "1720_nm_absorption_A": 0.224,
+      "940_nm_avg_count_1.9_2.1hz": 748.32
+    }
+  }
+]

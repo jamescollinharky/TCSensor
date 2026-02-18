@@ -1,0 +1,35 @@
+[
+  {
+    "_comment": "1722 nm from MAX of 0.85\u20131.1 Hz IFFT bandpass (1720 nm); A=-log10(count/I0), R=10^(-A). Other bands = median synthetic.",
+    "reflectance_nm": {
+      "2208": 0.4344,
+      "2190": 0.4514,
+      "1940": 0.4832,
+      "1734": 0.5923,
+      "1722": 0.5102,
+      "1445": 0.5254,
+      "1680": 0.6218
+    },
+    "absorption_nm": {
+      "1722": 0.2923
+    },
+    "tc_mmol_l": 7.13,
+    "hdl_mmol_l": 1.2,
+    "tg_mmol_l": 1.5,
+    "ldl_mmol_l": 5.25,
+    "tc_mg_dl": 275.8,
+    "ldl_mg_dl": 203.1,
+    "sensor_bands_used": {
+      "1720_nm_max_count_0.85_1.1hz": 521.91,
+      "1720_nm_min_count_0.85_1.1hz": 461.21,
+      "1720_nm_absorption_A": 0.2923,
+      "940_nm_max_count_0.85_1.1hz": 747.16
+    },
+    "from_min_of_IFFT": {
+      "tc_mmol_l": 8.89,
+      "tc_mg_dl": 343.7,
+      "ldl_mmol_l": 7.01,
+      "ldl_mg_dl": 271.0
+    }
+  }
+]

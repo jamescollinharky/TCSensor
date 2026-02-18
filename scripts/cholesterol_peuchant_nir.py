@@ -192,7 +192,7 @@ def main():
     out_dir = Path(__file__).resolve().parent.parent
     data_dir = out_dir / "data"
     data_dir.mkdir(exist_ok=True)
-    synthetic_path = data_dir / "cholesterol_peuchant_synthetic.json"
+    synthetic_path = data_dir / "reference" / "cholesterol_peuchant_synthetic.json"
 
     import sys
     if "--fat-test" in sys.argv:

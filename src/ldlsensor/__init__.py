@@ -1,1 +1,1 @@
-# ldlsensor: camera-based light sensing and demos (cholesterol, NIR, pulse ox).
+# ldlsensor: NIR multi-band sensing, Arduino serial capture, and Peuchant-style cholesterol (synthetic).

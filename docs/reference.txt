@@ -1,67 +1,42 @@
-Light sensor (camera as light sensor) — quick reference
-=====================================================
+Quick reference — NIR multi-band sensor (Arduino + serial)
+=========================================================
 
 Setup
 -----
   pip install -r requirements.txt
-  macOS: grant Camera access to Terminal/IDE in System Settings → Privacy & Security → Camera
 
-Commands
---------
-  python scripts/light_sensor.py
-    Single brightness reading (0–255, 0–100%)
+Arduino multi-band cycle
+------------------------
+  Upload arduino/multi_band_cycle/multi_band_cycle.ino to Arduino Uno.
+  Output: one CSV row per cycle: ms,1300,1460,1650,1720,1900 (merged time series).
 
-  python scripts/light_sensor.py --watch
-    Live brightness bar (Ctrl+C to stop)
+Capture serial to CSV (Option B)
+-------------------------------
+  python scripts/capture_multi_band_serial.py -l
+    List serial ports.
 
-  python scripts/light_sensor.py --record [--duration SEC] [--interval SEC]
-    Record time series; saves CSV + time series PNG + spectrogram PNG + frequencies CSV.
-    Default: sample every 1 s; use --duration to limit, --interval for rate.
-
-  python scripts/light_sensor.py --record --flash HZ --duration SEC
-    Flash screen at HZ (white/black) while recording. Point camera at screen.
-    Uses ~30 Hz sampling. Example: --flash 15 --duration 10
-
-  python scripts/light_sensor.py --plot [CSV]
-    Plot time series from CSV (default: light_sensor_timeseries.csv)
-
-  python scripts/light_sensor.py --spectrogram [CSV]
-    Plot spectrogram from CSV (default: light_sensor_timeseries.csv)
-
-  python scripts/light_sensor.py --frequencies [CSV]
-    Print dominant frequencies (Hz) from CSV (default: light_sensor_timeseries.csv)
-
-  python scripts/light_sensor.py CAMERA_INDEX ...
-    Use different camera (e.g. 1 for front camera): python scripts/light_sensor.py 1 --record
-
-Output files (after --record)
------------------------------
-  light_sensor_timeseries.csv       timestamp, brightness
-  light_sensor_timeseries.png       time series plot
-  light_sensor_timeseries_spectrogram.png   spectrogram (time vs frequency)
-  light_sensor_timeseries_frequencies.csv   frequency_Hz, power_dB
+  python scripts/capture_multi_band_serial.py PORT [-o output.csv]
+    Capture from Arduino to CSV (default: data/multi_band_timeseries.csv). Ctrl+C to stop.
+    Example: python scripts/capture_multi_band_serial.py /dev/cu.usbmodem14101
 
 Other scripts
 -------------
-  python scripts/flashlight.py
-    Fullscreen white “flashlight”; click or Esc/Q to turn off.
+  python scripts/cholesterol_peuchant_nir.py
+    Peuchant 1987 NIR (synthetic reflectance). TC/LDL from 7-wavelength formula. NOT for medical use.
 
-  python scripts/test_camera_led.py
-    Opens camera 5 s; check if hardware LED turns on (LED is not software-controllable).
+  python scripts/plot_pulse_ox_fft.py [CSV]
+    FFT on color-band CSV (elapsed_sec, R, G, B). Default: data/pulse_ox_color_timeseries.csv
 
-  python scripts/pulse_ox_camera.py [CAMERA_INDEX]
-    Test pulse oximeter using camera (reflectance PPG). Place finger over lens.
-    Shows pulse (BPM) and uncalibrated SpO2-like proxy. NOT for medical use.
-    Ref: https://en.wikipedia.org/wiki/Pulse_oximetry
+  python scripts/yom_series_fft.py [raw.txt]
+    Parse Arduino dump, save CSV, FFT, bandpass. Default: data/yom_arduino_series_raw.txt
 
-  python scripts/cholesterol_camera.py [--reference] [--measure] [--watch]
-    Camera-based cholesterol assay demo (enzymatic method proxy, e.g. Peuchant 1987).
-    --reference: capture blank, save to cholesterol_reference.json
-    --measure: measure sample using saved reference (absorbance proxy, cholesterol index)
-    --watch: live R and absorbance proxy. NOT for medical use; calibration required.
+  python scripts/validate_peuchant_nir.py
+    Validate Peuchant NIR formula on synthetic data.
 
-Notes
------
-  • Camera’s physical LED/flash cannot be controlled from code.
-  • “Flash” in this project = flashing the screen (point camera at screen).
-  • Spectrogram shows brightness modulation over time and frequency.
+  python scripts/counts_to_absorption.py
+    Counts → absorption A = -log10(I/I0); reflectance R = 10^(-A).
+
+Sensor → reflectance for Peuchant NIR
+-------------------------------------
+  See docs/sensor_to_reflectance.md: counts → absorption; reflectance at 7 wavelengths
+  (2208, 2190, 1940, 1734, 1722, 1445, 1680 nm) for TC formula.
